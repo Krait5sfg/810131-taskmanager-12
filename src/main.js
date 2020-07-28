@@ -14,7 +14,7 @@ const createMenuTemplate = () => {
       <label for="control__statistic" class="control__label">STATISTICS</label>
     </section>`
   );
-}
+};
 
 const createFilterTemplate = () => {
   return (
@@ -56,7 +56,7 @@ const createSortingTemplate = () => {
       <a href="#" class="board__filter" data-sort-type="date-down">SORT BY DATE down</a>
     </div>`
   );
-}
+};
 
 const createEditTaskTemplate = () => {
   return (
@@ -185,13 +185,9 @@ const createTaskTemplate = () => {
     </div>
   </article>`
   );
-}
+};
 
-const createLoadButtonTemplate = () => {
-  return (
-    `<button class="load-more" type="button">load more</button>`
-  );
-}
+const createLoadButtonTemplate = () => `<button class="load-more" type="button">load more</button>`;
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -209,4 +205,4 @@ render(boardTasksElement, createEditTaskTemplate(), `beforeend`);
 for (let x = 0; x < TASK_REPEAT; x++) {
   render(boardTasksElement, createTaskTemplate(), `beforeend`);
 }
-
+render(boardElement, createLoadButtonTemplate(), `beforeend`);
