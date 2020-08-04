@@ -6,9 +6,11 @@ import {createEditTaskTemplate} from './view/edit-task.js';
 import {createTaskTemplate} from './view/task.js';
 import {createLoadButtonTemplate} from './view/load-button.js';
 import {generateTask} from './mock/task.js';
+import {generateFilter} from './mock/filter.js';
 
 const TASK_REPEAT = 4;
 const tasks = new Array(TASK_REPEAT).fill().map(generateTask);
+const filters = generateFilter(tasks);
 
 const mainElement = document.querySelector(`.main`);
 const mainControlElement = mainElement.querySelector(`.main__control`);
@@ -18,7 +20,7 @@ const render = (container, template, place) => {
 };
 
 render(mainControlElement, createMenuTemplate(), `beforeend`);
-render(mainElement, createFilterTemplate(), `beforeend`);
+render(mainElement, createFilterTemplate(filters), `beforeend`);
 render(mainElement, createBoardTemplate(), `beforeend`);
 
 const boardElement = mainElement.querySelector(`.board`);
