@@ -61,15 +61,7 @@ export const createEditTaskTemplate = (task = {}) => {
     color = `black`,
     description = ``,
     dueDate = null,
-    repeatingDays = {
-      mo: false,
-      tu: false,
-      we: false,
-      th: false,
-      fr: false,
-      sa: false,
-      su: false
-    },
+    repeatingDays,
   } = task;
 
   const deadLineClassName = isTaskExpired(dueDate)
@@ -78,7 +70,7 @@ export const createEditTaskTemplate = (task = {}) => {
 
   const dateTemplate = createTaskEditDateTemplate(dueDate);
 
-  const repeatingClassName = Object.values(repeatingDays).some(Boolean)
+  const repeatingClassName = isTaskRepeating(repeatingDays)
     ? `card--repeat`
     : ``;
 

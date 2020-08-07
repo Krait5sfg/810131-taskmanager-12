@@ -1,48 +1,40 @@
 import {COLORS} from '../const.js';
 import {getRandomInteger} from '../utils.js';
 
-const generateDescription = () => {
-  const description = [
-    `Изучить теорию`,
-    `Сделать домашку`,
-    `Пройти интенсив на соточку`
-  ];
-  const randomIndex = getRandomInteger(0, description.length - 1);
-  return description[randomIndex];
-};
+const DESCRIPTIONS = [
+  `Изучить теорию`,
+  `Сделать домашку`,
+  `Пройти интенсив на соточку`
+];
+const MAX_DAYS_GAP = 7;
+
+const generateDescription = (descriptions) => descriptions[getRandomInteger(0, descriptions.length - 1)];
 
 const generateDate = () => {
   const isDate = Boolean(getRandomInteger(0, 1));
-  const maxDaysGap = 7;
-  const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
+  if (!isDate) {
+    return null;
+  }
+  const daysGap = getRandomInteger(-MAX_DAYS_GAP, MAX_DAYS_GAP);
   const currentDate = new Date();
   currentDate.setHours(23, 59, 59, 999);
   currentDate.setDate(currentDate.getDate() + daysGap);
 
-  if (!isDate) {
-    return null;
-  } else {
-    return new Date(currentDate);
-  }
-
+  return new Date(currentDate);
 };
 
-const generateRepeatingDays = () => {
-  return {
-    mo: false,
-    tu: false,
-    we: Boolean(getRandomInteger(0, 1)),
-    th: false,
-    fr: Boolean(getRandomInteger(0, 1)),
-    sa: false,
-    su: false
-  };
-};
+const generateRepeatingDays = () => ({
+  mo: false,
+  tu: false,
+  we: Boolean(getRandomInteger(0, 1)),
+  th: false,
+  fr: Boolean(getRandomInteger(0, 1)),
+  sa: false,
+  su: false
+});
 
-const getRandomColor = () => {
-  const randomIndex = getRandomInteger(0, COLORS.length - 1);
-  return COLORS[randomIndex];
-};
+const getRandomColor = () => COLORS[getRandomInteger(0, COLORS.length - 1)];
+const getRandomBooleanValue = () => Boolean(getRandomInteger(0, 1));
 
 export const generateTask = () => {
   const dueDate = generateDate();
@@ -59,11 +51,11 @@ export const generateTask = () => {
     };
 
   return {
-    description: generateDescription(),
+    description: generateDescription(DESCRIPTIONS),
     dueDate,
     repeatingDays,
     color: getRandomColor(),
-    isFavorite: Boolean(getRandomInteger(0, 1)),
-    isArchive: Boolean(getRandomInteger(0, 1)),
+    isFavorite: getRandomBooleanValue(),
+    isArchive: getRandomBooleanValue(),
   };
 };

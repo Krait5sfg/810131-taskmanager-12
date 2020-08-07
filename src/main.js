@@ -7,6 +7,7 @@ import {createTaskTemplate} from './view/task.js';
 import {createLoadButtonTemplate} from './view/load-button.js';
 import {generateTask} from './mock/task.js';
 import {generateFilter} from './mock/filter.js';
+import {render} from './utils.js';
 
 const CountType = {
   TASK_COUNT: 20,
@@ -18,10 +19,6 @@ const filters = generateFilter(tasks);
 
 const mainElement = document.querySelector(`.main`);
 const mainControlElement = mainElement.querySelector(`.main__control`);
-
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
 
 render(mainControlElement, createMenuTemplate(), `beforeend`);
 render(mainElement, createFilterTemplate(filters), `beforeend`);
@@ -53,4 +50,3 @@ if (tasks.length > CountType.TASK_COUNT_PER_STEP) {
     }
   });
 }
-
