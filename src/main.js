@@ -13,7 +13,7 @@ const CountType = {
   TASK_COUNT_PER_STEP: 8,
 };
 
-const tasks = new Array(CountType.TASK_COUNT).fill().map(generateTask);
+const tasks = new Array(CountType.TASK_COUNT).fill(``).map(generateTask);
 const filters = generateFilter(tasks);
 
 const mainElement = document.querySelector(`.main`);
