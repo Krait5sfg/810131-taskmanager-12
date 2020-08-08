@@ -10,11 +10,11 @@ import {generateFilter} from './mock/filter.js';
 import {render} from './utils.js';
 
 const CountType = {
-  TASK_COUNT: 20,
-  TASK_COUNT_PER_STEP: 8,
+  TASK: 20,
+  TASK_PER_STEP: 8,
 };
 
-const tasks = new Array(CountType.TASK_COUNT).fill(``).map(generateTask);
+const tasks = new Array(CountType.TASK).fill(``).map(generateTask);
 const filters = generateFilter(tasks);
 
 const mainElement = document.querySelector(`.main`);
@@ -29,11 +29,11 @@ const boardTasksElement = boardElement.querySelector(`.board__tasks`);
 
 render(boardElement, createSortingTemplate(), `afterbegin`);
 render(boardTasksElement, createEditTaskTemplate(tasks[0]), `beforeend`);
-for (let x = 1; x < CountType.TASK_COUNT_PER_STEP; x++) {
+for (let x = 1; x < CountType.TASK_PER_STEP; x++) {
   render(boardTasksElement, createTaskTemplate(tasks[x]), `beforeend`);
 }
-if (tasks.length > CountType.TASK_COUNT_PER_STEP) {
-  let renderedTaskCount = CountType.TASK_COUNT_PER_STEP;
+if (tasks.length > CountType.TASK_PER_STEP) {
+  let renderedTaskCount = CountType.TASK_PER_STEP;
 
   render(boardElement, createLoadButtonTemplate(), `beforeend`);
   const loadMoreElement = boardElement.querySelector(`.load-more`);
@@ -41,10 +41,10 @@ if (tasks.length > CountType.TASK_COUNT_PER_STEP) {
   loadMoreElement.addEventListener(`click`, (evt) => {
     evt.preventDefault();
     tasks
-      .slice(renderedTaskCount, renderedTaskCount + CountType.TASK_COUNT_PER_STEP)
+      .slice(renderedTaskCount, renderedTaskCount + CountType.TASK_PER_STEP)
       .forEach((task) => render(boardTasksElement, createTaskTemplate(task), `beforeend`));
 
-    renderedTaskCount += CountType.TASK_COUNT_PER_STEP;
+    renderedTaskCount += CountType.TASK_PER_STEP;
     if (renderedTaskCount >= tasks.length) {
       loadMoreElement.remove();
     }

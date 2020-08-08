@@ -1,3 +1,5 @@
+import {Number} from '../const.js';
+
 const createFilterItemTemplate = (filter, isChecked) => {
   const {title, count} = filter;
 
@@ -9,7 +11,7 @@ const createFilterItemTemplate = (filter, isChecked) => {
 
 export const createFilterTemplate = (filterItems) => {
   const filterItemsTemplate = filterItems
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+    .map((filter, index) => createFilterItemTemplate(filter, index === Number.ZERO))
     .join(``);
 
   return (`

@@ -1,4 +1,4 @@
-import {COLORS} from '../const.js';
+import {COLORS, Number} from '../const.js';
 import {getRandomInteger} from '../utils.js';
 
 const DESCRIPTIONS = [
@@ -8,16 +8,24 @@ const DESCRIPTIONS = [
 ];
 const MAX_DAYS_GAP = 7;
 
-const generateDescription = (descriptions) => descriptions[getRandomInteger(0, descriptions.length - 1)];
+const DateNumber = {
+  HOURS: 23,
+  MINUTES: 59,
+  SECONDS: 59,
+  MIL_SECONDS: 999,
+};
+
+const generateDescription = () => DESCRIPTIONS[getRandomInteger(Number.ZERO, DESCRIPTIONS.length - Number.ONE)];
+const getRandomBooleanValue = () => Boolean(getRandomInteger(Number.ZERO, Number.ONE));
 
 const generateDate = () => {
-  const isDate = Boolean(getRandomInteger(0, 1));
+  const isDate = getRandomBooleanValue();
   if (!isDate) {
     return null;
   }
   const daysGap = getRandomInteger(-MAX_DAYS_GAP, MAX_DAYS_GAP);
   const currentDate = new Date();
-  currentDate.setHours(23, 59, 59, 999);
+  currentDate.setHours(DateNumber.HOURS, DateNumber.MINUTES, DateNumber.SECONDS, DateNumber.MIL_SECONDS);
   currentDate.setDate(currentDate.getDate() + daysGap);
 
   return new Date(currentDate);
@@ -26,15 +34,14 @@ const generateDate = () => {
 const generateRepeatingDays = () => ({
   mo: false,
   tu: false,
-  we: Boolean(getRandomInteger(0, 1)),
+  we: getRandomBooleanValue(),
   th: false,
-  fr: Boolean(getRandomInteger(0, 1)),
+  fr: getRandomBooleanValue(),
   sa: false,
   su: false
 });
 
-const getRandomColor = () => COLORS[getRandomInteger(0, COLORS.length - 1)];
-const getRandomBooleanValue = () => Boolean(getRandomInteger(0, 1));
+const getRandomColor = () => COLORS[getRandomInteger(Number.ZERO, COLORS.length - Number.ONE)];
 
 export const generateTask = () => {
   const dueDate = generateDate();
@@ -51,7 +58,7 @@ export const generateTask = () => {
     };
 
   return {
-    description: generateDescription(DESCRIPTIONS),
+    description: generateDescription(),
     dueDate,
     repeatingDays,
     color: getRandomColor(),
