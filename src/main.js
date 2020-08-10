@@ -16,6 +16,37 @@ const CountType = {
   TASK_PER_STEP: 8,
 };
 
+const renderTask = (taskListElement, task) => {
+  const taskElement = new TaskView(task);
+  const taskEditElement = new TaskEditView(task);
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceFormToCard();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  const replaceCardToForm = () => taskListElement.replaceChild(taskEditElement.getElement(), taskElement.getElement());
+
+  const replaceFormToCard = () => taskListElement.replaceChild(taskElement.getElement(), taskEditElement.getElement());
+
+  taskElement.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
+    replaceCardToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
+  });
+
+  taskEditElement.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
+  });
+
+  render(taskListElement, taskElement.getElement(), RenderPosition.BEFOREEND);
+};
+
+
 const tasks = new Array(CountType.TASK).fill(``).map(generateTask);
 const filters = generateFilter(tasks);
 
@@ -24,15 +55,16 @@ const mainControlElement = mainElement.querySelector(`.main__control`);
 
 render(mainControlElement, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
 render(mainElement, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
+
 const boardElement = new BoardView();
 render(mainElement, boardElement.getElement(), RenderPosition.BEFOREEND);
 render(boardElement.getElement(), new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
 const boardTasksElement = new BoardTasksView();
 render(boardElement.getElement(), boardTasksElement.getElement(), RenderPosition.BEFOREEND);
-render(boardTasksElement.getElement(), new TaskEditView(tasks[0]).getElement(), RenderPosition.BEFOREEND);
-for (let x = 1; x < CountType.TASK_PER_STEP; x++) {
-  render(boardTasksElement.getElement(), new TaskView(tasks[x]).getElement(), RenderPosition.BEFOREEND);
+
+for (let x = 0; x < CountType.TASK_PER_STEP; x++) {
+  renderTask(boardTasksElement.getElement(), tasks[x]);
 }
 if (tasks.length > CountType.TASK_PER_STEP) {
   let renderedTaskCount = CountType.TASK_PER_STEP;
@@ -43,7 +75,7 @@ if (tasks.length > CountType.TASK_PER_STEP) {
     evt.preventDefault();
     tasks
       .slice(renderedTaskCount, renderedTaskCount + CountType.TASK_PER_STEP)
-      .forEach((task) => render(boardTasksElement.getElement(), new TaskView(task).getElement(), RenderPosition.BEFOREEND));
+      .forEach((task) => renderTask(boardTasksElement.getElement(), task));
 
     renderedTaskCount += CountType.TASK_PER_STEP;
     if (renderedTaskCount >= tasks.length) {
