@@ -92,5 +92,3 @@ if (tasks.every((task) => task.isArchive)) {
     });
   }
 }
-
-
