@@ -1,5 +1,22 @@
 import {COLORS} from '../const.js';
-import {isTaskExpired, isTaskRepeating, humanizeTaskDueDate} from '../utils.js';
+import {isTaskExpired, isTaskRepeating, humanizeTaskDueDate, createElement} from '../utils.js';
+
+const BLANK_TASK = {
+  color: COLORS[0],
+  description: ``,
+  dueDate: null,
+  repeatingDays: {
+    mo: false,
+    tu: false,
+    we: false,
+    th: false,
+    fr: false,
+    sa: false,
+    su: false
+  },
+  isArchive: false,
+  isFavorite: false
+};
 
 const createTaskEditDateTemplate = (dueDate) => {
   return `
@@ -56,13 +73,8 @@ const createTaskEditColorsTemplate = (currentColor) => {
   >`).join(``);
 };
 
-export const createEditTaskTemplate = (task = {}) => {
-  const {
-    color = `black`,
-    description = ``,
-    dueDate = null,
-    repeatingDays,
-  } = task;
+const createEditTaskTemplate = (task = {}) => {
+  const {color, description, dueDate, repeatingDays} = task;
 
   const deadLineClassName = isTaskExpired(dueDate)
     ? `card--deadline`
@@ -78,8 +90,7 @@ export const createEditTaskTemplate = (task = {}) => {
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
-  return (`
-    <article class="card card--edit card--${color} ${deadLineClassName} ${repeatingClassName}">
+  return `<article class="card card--edit card--${color} ${deadLineClassName} ${repeatingClassName}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__color-bar">
@@ -118,6 +129,28 @@ export const createEditTaskTemplate = (task = {}) => {
         </div>
       </div>
     </form >
-  </article >
-  `);
+  </article >`;
 };
+
+export default class TaskEdit {
+  constructor(task = BLANK_TASK) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditTaskTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
