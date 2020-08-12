@@ -36,6 +36,8 @@ export const render = (container, element, place) => {
     case RenderPosition.BEFOREEND:
       container.append(element);
       break;
+    default:
+      throw new Error(`Передено некорретное значение place в функцию render`);
   }
 };
 
