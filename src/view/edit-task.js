@@ -137,9 +137,20 @@ export default class TaskEdit extends AbstractView {
   constructor(task = BLANK_TASK) {
     super();
     this._task = task;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this); // привязывает контекст
   }
 
   getTemplate() {
     return createEditTaskTemplate(this._task);
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().addEventListener(`submit`, this._formSubmitHandler);
   }
 }

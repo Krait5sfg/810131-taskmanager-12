@@ -37,13 +37,12 @@ const renderTask = (taskListElement, task) => {
 
   const replaceFormToCard = () => taskListElement.replaceChild(taskElement.getElement(), taskEditElement.getElement());
 
-  taskElement.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
+  taskElement.setEditClickHandler(() => {
     replaceCardToForm();
     document.addEventListener(`keydown`, onEscKeyDown);
   });
 
-  taskEditElement.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
-    evt.preventDefault();
+  taskEditElement.setFormSubmitHandler(() => {
     replaceFormToCard();
     document.removeEventListener(`keydown`, onEscKeyDown);
   });
@@ -78,8 +77,9 @@ if (tasks.every((task) => task.isArchive)) {
     const loadMoreButtonElement = new LoadMoreButtonView();
     render(boardElement.getElement(), loadMoreButtonElement.getElement(), RenderPosition.BEFOREEND);
 
-    loadMoreButtonElement.getElement().addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    // loadMoreButtonElement.getElement().addEventListener(`click`, (evt) => {
+    // evt.preventDefault();
+    loadMoreButtonElement.setClickHandler(() => {
       tasks
         .slice(renderedTaskCount, renderedTaskCount + CountType.TASK_PER_STEP)
         .forEach((task) => renderTask(boardTasksElement.getElement(), task));
