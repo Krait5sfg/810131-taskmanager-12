@@ -22,6 +22,8 @@ export default class Board {
     this._boardTasksElement = new BoardTasksView();
     this._noTaskElement = new NoTaskView();
     this._loadMoreButtonElement = new LoadMoreButtonView();
+    this._renderedTaskCount = TASK_COUNT_PER_STEP;
+    this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
   }
 
   init(boardTasks) {
@@ -65,7 +67,6 @@ export default class Board {
       replaceFormToCard();
       document.removeEventListener(`keydown`, onEscKeyDown);
     });
-
     render(this._boardTasksElement, taskElement, RenderPosition.BEFOREEND);
   }
 
@@ -73,29 +74,23 @@ export default class Board {
     this._boardTasks
       .slice(from, to)
       .forEach((boardTask) => this._renderTask(boardTask));
-
   }
 
   _renderNoTasks() {
     render(this._boardElement, this._noTaskElement, RenderPosition.AFTERBEGIN);
   }
 
+  _handleLoadMoreButtonClick() {
+    this._renderTasks(this._renderedTaskCount, this._renderedTaskCount + TASK_COUNT_PER_STEP);
+    this._renderedTaskCount += TASK_COUNT_PER_STEP;
+    if (this._renderedTaskCount >= this._boardTasks.length) {
+      remove(this._loadMoreButtonElement);
+    }
+  }
+
   _renderLoadMoreButton() {
-    let renderedTaskCount = TASK_COUNT_PER_STEP;
-
     render(this._boardElement, this._loadMoreButtonElement, RenderPosition.BEFOREEND);
-
-    this._loadMoreButtonElement.setClickHandler(() => {
-      this._boardTasks
-        .slice(renderedTaskCount, renderedTaskCount + TASK_COUNT_PER_STEP)
-        .forEach((boardTask) => this._renderTask(boardTask));
-
-      renderedTaskCount += TASK_COUNT_PER_STEP;
-
-      if (renderedTaskCount >= this._boardTasks.length) {
-        remove(this._loadMoreButtonElement);
-      }
-    });
+    this._loadMoreButtonElement.setClickHandler(this._handleLoadMoreButtonClick);
   }
 
   _renderTaskList() {
