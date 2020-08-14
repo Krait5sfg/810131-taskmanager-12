@@ -6,6 +6,8 @@ import TaskView from '../view/task.js';
 import LoadMoreButtonView from '../view/load-button.js';
 import NoTaskView from '../view/no-task.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
+import {SortType} from '../const.js';
+import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
 const TASK_COUNT_PER_STEP = 8;
 const Key = {
@@ -24,18 +26,51 @@ export default class Board {
     this._loadMoreButtonElement = new LoadMoreButtonView();
     this._renderedTaskCount = TASK_COUNT_PER_STEP;
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._currenSortType = SortType.DEFAULT;
   }
 
   init(boardTasks) {
     this._boardTasks = boardTasks.slice();
+
+    this._sourcedBoardTasks = boardTasks.slice();// сохраняем исходный массив
 
     render(this._boardContainer, this._boardElement, RenderPosition.BEFOREEND);
     render(this._boardElement, this._boardTasksElement, RenderPosition.BEFOREEND);
     this._renderBoard();
   }
 
+  _sortTasks(sortType) {
+    switch (sortType) {
+      case SortType.DATE_UP:
+        this._boardTasks.sort(sortTaskUp);
+        break;
+      case SortType.DATE_DOWN:
+        this._boardTasks.sort(sortTaskDown);
+        break;
+      default:
+        this._boardTasks = this._sourcedBoardTasks.slice();
+    }
+    this._currenSortType = sortType;
+  }
+
+  _handleSortTypeChange(sortType) {
+    if (this._currenSortType === sortType) {
+      return;
+    }
+    this._sortTasks(sortType);
+    this._clearTaskList();
+    this._renderTaskList();
+  }
+
+  _clearTaskList() {
+    this._boardTasksElement.getElement().innerHTML = ``;
+    this._renderedTaskCount = TASK_COUNT_PER_STEP;
+  }
+
   _renderSort() {
     render(this._boardElement, this._sortElement, RenderPosition.AFTERBEGIN);
+    this._sortElement.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
   _renderTask(task) {
