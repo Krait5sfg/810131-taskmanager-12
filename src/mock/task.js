@@ -1,5 +1,5 @@
-import {COLORS, Number} from '../const.js';
-import {getRandomInteger} from '../utils.js';
+import {COLORS} from '../const.js';
+import {getRandomInteger} from "../utils/common.js";
 
 const DESCRIPTIONS = [
   `Изучить теорию`,
@@ -15,8 +15,8 @@ const DateNumber = {
   MIL_SECONDS: 999,
 };
 
-const generateDescription = () => DESCRIPTIONS[getRandomInteger(Number.ZERO, DESCRIPTIONS.length - Number.ONE)];
-const getRandomBooleanValue = () => Boolean(getRandomInteger(Number.ZERO, Number.ONE));
+const generateDescription = () => DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)];
+const getRandomBooleanValue = () => Boolean(getRandomInteger(0, 1));
 
 const generateDate = () => {
   const isDate = getRandomBooleanValue();
@@ -41,7 +41,7 @@ const generateRepeatingDays = () => ({
   su: false
 });
 
-const getRandomColor = () => COLORS[getRandomInteger(Number.ZERO, COLORS.length - Number.ONE)];
+const getRandomColor = () => COLORS[getRandomInteger(0, COLORS.length - 1)];
 
 export const generateTask = () => {
   const dueDate = generateDate();
