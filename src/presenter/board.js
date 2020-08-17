@@ -23,6 +23,7 @@ export default class Board {
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._currenSortType = SortType.DEFAULT;
+    this._taskPresenter = {}; // все презентеры задач
   }
 
   init(boardTasks) {
@@ -59,7 +60,10 @@ export default class Board {
   }
 
   _clearTaskList() {
-    this._boardTasksElement.getElement().innerHTML = ``;
+    Object
+      .values(this._taskPresenter)
+      .forEach((presenter) => presenter.destroy());
+    this._taskPresenter = {};
     this._renderedTaskCount = TASK_COUNT_PER_STEP;
   }
 
@@ -71,6 +75,7 @@ export default class Board {
   _renderTask(task) {
     const taskPresenter = new TaskPresenter(this._boardTasksElement);
     taskPresenter.init(task);
+    this._taskPresenter[task.id] = taskPresenter;
   }
 
   _renderTasks(from, to) {
