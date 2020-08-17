@@ -193,4 +193,14 @@ export default class TaskEdit extends AbstractView {
     parent.replaceChild(newElement, prevElement);
     prevElement = null; // Чтобы окончательно "убить" ссылку на prevElement
   }
+
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+
+    this._data = Object.assign({}, this._data, update);
+
+    this.updateElement();
+  }
 }
