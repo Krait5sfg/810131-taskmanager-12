@@ -1,6 +1,11 @@
 import TaskView from '../view/task.js';
 import TaskEditView from '../view/edit-task.js';
-import {render, RenderPosition, replace} from '../utils/render.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
+
+const Key = {
+  ESCAPE: `Escape`,
+  ESC: `Esc`,
+};
 
 export default class Task {
   constructor(taskListContainer) {
@@ -16,13 +21,35 @@ export default class Task {
   init(task) {
     this._task = task;
 
+    const prevTaskComponent = this._taskComponent;
+    const prevTaskEditComponent = this._taskEditComponent;
+
     this._taskComponent = new TaskView(task);
     this._taskEditComponent = new TaskEditView(task);
 
     this._taskComponent.setEditClickHandler(this._handleEditClick);
     this._taskEditComponent.setFormSubmitHandler(this._handleFormSubmit);
 
-    render(this._taskListContainer, this._taskComponent, RenderPosition.BEFOREEND);
+    if (prevTaskComponent === null || prevTaskEditComponent === null) {
+      render(this._taskListContainer, this._taskComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this._taskListContainer.getElement().contains(prevTaskComponent.getElement())) {
+      replace(this._taskComponent, prevTaskComponent);
+    }
+
+    if (this._taskListContainer.getElement().contains(prevTaskEditComponent.getElement())) {
+      replace(this._taskEditComponent, prevTaskEditComponent);
+    }
+
+    remove(prevTaskComponent);
+    remove(prevTaskEditComponent);
+  }
+
+  destroy() {
+    remove(this._taskComponent);
+    remove(this._taskEditComponent);
   }
 
   _handleEditClick() {
@@ -44,7 +71,7 @@ export default class Task {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === `Escape` || evt.key === `Esc`) {
+    if (evt.key === Key.ESCAPE || evt.key === Key.ESC) {
       evt.preventDefault();
       this._replaceFormToCard();
     }

@@ -9,10 +9,6 @@ import {SortType} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
 const TASK_COUNT_PER_STEP = 8;
-const Key = {
-  ESCAPE: `Escape`,
-  ESC: `Esc`,
-};
 
 export default class Board {
   constructor(boardContainer) {
