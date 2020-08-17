@@ -27,19 +27,17 @@ const createTaskEditDateTemplate = (dueDate, isDueDate) => {
 
     ${isDueDate ? `<fieldset class="card__date-deadline">
       <label class="card__input-deadline-wrap">
-        <input class="card__date" type="text" placeholder="" name="date" value="${humanizeTaskDueDate(dueDate)} ${dueDate.getHours()}:${dueDate.getMinutes()}"/>
+        <input class="card__date" type="text" placeholder="" name="date" value="${dueDate !== null ? humanizeTaskDueDate(dueDate) : ``}"/>
       </label>
     </fieldset>` : ``}`;
 };
 
-const createTaskEditRepeatingTemplate = (repeating, isRepeting) => {
-  return `
-    <button class="card__repeat-toggle" type="button">
-      repeat:<span class="card__repeat-status">${isRepeting ? `yes` : `no`}</span>
+const createTaskEditRepeatingTemplate = (repeating, isRepeating) => {
+  return `<button class="card__repeat-toggle" type="button">
+      repeat:<span class="card__repeat-status">${isRepeating ? `yes` : `no`}</span>
     </button>
 
-    ${isRepeting ? `
-      <fieldset class="card__repeat-days">
+    ${isRepeating ? `<fieldset class="card__repeat-days">
         <div class="card__repeat-days-inner">
         ${Object.entries(repeating).map(([day, repeat]) => `<input
         class="visually-hidden card__repeat-day-input"
@@ -75,7 +73,7 @@ const createTaskEditColorsTemplate = (currentColor) => {
 };
 
 const createEditTaskTemplate = (data) => {
-  const {color, description, dueDate, repeatingDays, isRepeting, isDueDate} = data;
+  const {color, description, dueDate, repeatingDays, isRepeating, isDueDate} = data;
 
   const deadLineClassName = isTaskExpired(dueDate)
     ? `card--deadline`
@@ -83,11 +81,11 @@ const createEditTaskTemplate = (data) => {
 
   const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
 
-  const repeatingClassName = isRepeting
+  const repeatingClassName = isRepeating
     ? `card--repeat`
     : ``;
 
-  const repeatingTemplate = createTaskEditRepeatingTemplate(repeatingDays, isRepeting);
+  const repeatingTemplate = createTaskEditRepeatingTemplate(repeatingDays, isRepeating);
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
@@ -138,6 +136,11 @@ export default class TaskEdit extends AbstractView {
     super();
     this._data = TaskEdit.parseTaskToData(task);
     this._formSubmitHandler = this._formSubmitHandler.bind(this); // привязывает контекст
+
+    this._dueDateToggleHandler = this._dueDateToggleHandler.bind(this);
+    this._repeatingToggleHandler = this._repeatingToggleHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -166,7 +169,7 @@ export default class TaskEdit extends AbstractView {
     }
 
     if (!data.isRepeating) {
-      data.repeating = {
+      data.repeatingDays = {
         mo: false,
         tu: false,
         we: false,
@@ -192,6 +195,8 @@ export default class TaskEdit extends AbstractView {
 
     parent.replaceChild(newElement, prevElement);
     prevElement = null; // Чтобы окончательно "убить" ссылку на prevElement
+
+    this.restoreHandlers();
   }
 
   updateData(update) {
@@ -202,5 +207,33 @@ export default class TaskEdit extends AbstractView {
     this._data = Object.assign({}, this._data, update);
 
     this.updateElement();
+  }
+
+  _dueDateToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isDueDate: !this._data.isDueDate
+    });
+  }
+
+  _repeatingToggleHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      isRepeating: !this._data.isRepeating
+    });
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector(`.card__date-deadline-toggle`)
+      .addEventListener(`click`, this._dueDateToggleHandler);
+    this.getElement()
+      .querySelector(`.card__repeat-toggle`)
+      .addEventListener(`click`, this._repeatingToggleHandler);
   }
 }
