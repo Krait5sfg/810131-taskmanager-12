@@ -7,6 +7,7 @@ import {render, RenderPosition, remove} from '../utils/render.js';
 import TaskPresenter from './task.js';
 import {SortType} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
+import {updateItem} from "../utils/common.js";
 
 const TASK_COUNT_PER_STEP = 8;
 
@@ -22,6 +23,7 @@ export default class Board {
     this._renderedTaskCount = TASK_COUNT_PER_STEP;
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleTaskChange = this._handleTaskChange.bind(this);
     this._currenSortType = SortType.DEFAULT;
     this._taskPresenter = {}; // все презентеры задач
   }
@@ -116,5 +118,11 @@ export default class Board {
     }
     this._renderSort();
     this._renderTaskList();
+  }
+
+  _handleTaskChange(updatedTask) {
+    this._boardTasks = updateItem(this._boardTasks, updatedTask);
+    this._sourcedBoardTasks = updateItem(this._sourcedBoardTasks, updatedTask);
+    this._taskPresenter[updatedTask.id].init(updatedTask);// перерисовка обновленных задач
   }
 }
