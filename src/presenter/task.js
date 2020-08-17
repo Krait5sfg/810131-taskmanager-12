@@ -8,14 +8,18 @@ const Key = {
 };
 
 export default class Task {
-  constructor(taskListContainer) {
+  constructor(taskListContainer, changeData) {
     this._taskListContainer = taskListContainer;
+    this._changeData = changeData; // измененная задача
+
     this._taskComponent = null;
     this._taskEditComponent = null;
 
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleArchiveClick = this._handleArchiveClick.bind(this);
   }
 
   init(task) {
@@ -29,6 +33,8 @@ export default class Task {
 
     this._taskComponent.setEditClickHandler(this._handleEditClick);
     this._taskEditComponent.setFormSubmitHandler(this._handleFormSubmit);
+    this._taskComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._taskComponent.setArchiveClickHandler(this._handleArchiveClick);
 
     if (prevTaskComponent === null || prevTaskEditComponent === null) {
       render(this._taskListContainer, this._taskComponent, RenderPosition.BEFOREEND);
@@ -56,7 +62,8 @@ export default class Task {
     this._replaceCardToForm();
   }
 
-  _handleFormSubmit() {
+  _handleFormSubmit(task) {
+    this._changeData(task);
     this._replaceFormToCard();
   }
 
@@ -75,5 +82,13 @@ export default class Task {
       evt.preventDefault();
       this._replaceFormToCard();
     }
+  }
+
+  _handleFavoriteClick() {
+    this._changeData(Object.assign({}, this._task, {isFavorite: !this._task.isFavorite}));
+  }
+
+  _handleArchiveClick() {
+    this._changeData(Object.assign({}, this._task, {isArchive: !this._task.isArchive}));
   }
 }

@@ -75,7 +75,7 @@ export default class Board {
   }
 
   _renderTask(task) {
-    const taskPresenter = new TaskPresenter(this._boardTasksElement);
+    const taskPresenter = new TaskPresenter(this._boardTasksElement, this._handleTaskChange);
     taskPresenter.init(task);
     this._taskPresenter[task.id] = taskPresenter;
   }
@@ -123,6 +123,6 @@ export default class Board {
   _handleTaskChange(updatedTask) {
     this._boardTasks = updateItem(this._boardTasks, updatedTask);
     this._sourcedBoardTasks = updateItem(this._sourcedBoardTasks, updatedTask);
-    this._taskPresenter[updatedTask.id].init(updatedTask);// перерисовка обновленных задач
+    this._taskPresenter[updatedTask.id].init(updatedTask);// сохраняем в презентере обновленную задачу
   }
 }
