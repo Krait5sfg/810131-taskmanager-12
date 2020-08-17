@@ -1,11 +1,10 @@
 import BoardView from '../view/board.js';
 import BoardTasksView from '../view/board-tasks.js';
 import SortView from '../view/sort.js';
-import TaskEditView from '../view/edit-task.js';
-import TaskView from '../view/task.js';
 import LoadMoreButtonView from '../view/load-button.js';
 import NoTaskView from '../view/no-task.js';
-import {render, RenderPosition, remove, replace} from '../utils/render.js';
+import {render, RenderPosition, remove} from '../utils/render.js';
+import TaskPresenter from './task.js';
 import {SortType} from '../const.js';
 import {sortTaskUp, sortTaskDown} from '../utils/task.js';
 
@@ -74,35 +73,8 @@ export default class Board {
   }
 
   _renderTask(task) {
-    const taskElement = new TaskView(task);
-    const taskEditElement = new TaskEditView(task);
-
-    const replaceCardToForm = () => {
-      replace(taskEditElement, taskElement);
-    };
-
-    const replaceFormToCard = () => {
-      replace(taskElement, taskEditElement);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === Key.ESCAPE || evt.key === Key.ESC) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    taskElement.setEditClickHandler(() => {
-      replaceCardToForm();
-      document.addEventListener(`keydown`, onEscKeyDown);
-    });
-
-    taskEditElement.setFormSubmitHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    });
-    render(this._boardTasksElement, taskElement, RenderPosition.BEFOREEND);
+    const taskPresenter = new TaskPresenter(this._boardTasksElement);
+    taskPresenter.init(task);
   }
 
   _renderTasks(from, to) {
