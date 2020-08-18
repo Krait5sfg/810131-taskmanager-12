@@ -43,6 +43,8 @@ const generateRepeatingDays = () => ({
 
 const getRandomColor = () => COLORS[getRandomInteger(0, COLORS.length - 1)];
 
+const generateId = () => Date.now() + parseInt(Math.random() * 1000, 10);
+
 export const generateTask = () => {
   const dueDate = generateDate();
   const repeatingDays = dueDate === null
@@ -58,6 +60,7 @@ export const generateTask = () => {
     };
 
   return {
+    id: generateId(),
     description: generateDescription(),
     dueDate,
     repeatingDays,
