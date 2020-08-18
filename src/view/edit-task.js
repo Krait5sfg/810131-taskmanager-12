@@ -255,4 +255,7 @@ export default class TaskEdit extends SmartView {
     });
   }
 
+  reset(task) {
+    this.updateData(TaskEdit.parseTaskToData(task));
+  }
 }
