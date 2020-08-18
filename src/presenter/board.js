@@ -24,6 +24,7 @@ export default class Board {
     this._handleLoadMoreButtonClick = this._handleLoadMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleTaskChange = this._handleTaskChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._currenSortType = SortType.DEFAULT;
     this._taskPresenter = {}; // все презентеры задач
   }
@@ -36,6 +37,12 @@ export default class Board {
     render(this._boardContainer, this._boardElement, RenderPosition.BEFOREEND);
     render(this._boardElement, this._boardTasksElement, RenderPosition.BEFOREEND);
     this._renderBoard();
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._taskPresenter)
+      .forEach((presenter) => presenter.resetView());
   }
 
   _sortTasks(sortType) {
@@ -75,7 +82,7 @@ export default class Board {
   }
 
   _renderTask(task) {
-    const taskPresenter = new TaskPresenter(this._boardTasksElement, this._handleTaskChange);
+    const taskPresenter = new TaskPresenter(this._boardTasksElement, this._handleTaskChange, this._handleModeChange);
     taskPresenter.init(task);
     this._taskPresenter[task.id] = taskPresenter;
   }
