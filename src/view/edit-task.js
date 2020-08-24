@@ -1,6 +1,8 @@
 import {COLORS} from '../const.js';
-import {isTaskExpired, isTaskRepeating, humanizeTaskDueDate} from '../utils/task.js';
-import SmartView from "./smart.js";
+import {isTaskRepeating, formatTaskDueDate} from '../utils/task.js';
+import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_TASK = {
   color: COLORS[0],
@@ -27,7 +29,7 @@ const createTaskEditDateTemplate = (dueDate, isDueDate) => {
 
     ${isDueDate ? `<fieldset class="card__date-deadline">
       <label class="card__input-deadline-wrap">
-        <input class="card__date" type="text" placeholder="" name="date" value="${dueDate !== null ? humanizeTaskDueDate(dueDate) : ``}"/>
+        <input class="card__date" type="text" placeholder="" name="date" value="${dueDate !== null ? formatTaskDueDate(dueDate) : ``}"/>
       </label>
     </fieldset>` : ``}`;
 };
@@ -75,10 +77,6 @@ const createTaskEditColorsTemplate = (currentColor) => {
 const createEditTaskTemplate = (data) => {
   const {color, description, dueDate, repeatingDays, isRepeating, isDueDate} = data;
 
-  const deadLineClassName = isTaskExpired(dueDate)
-    ? `card--deadline`
-    : ``;
-
   const dateTemplate = createTaskEditDateTemplate(dueDate, isDueDate);
 
   const repeatingClassName = isRepeating
@@ -89,9 +87,9 @@ const createEditTaskTemplate = (data) => {
 
   const colorsTemplate = createTaskEditColorsTemplate(color);
 
-  const isSubmitDisabled = isRepeating && !isTaskRepeating(repeatingDays);
+  const isSubmitDisabled = (isDueDate && dueDate === null) || (isRepeating && !isTaskRepeating(repeatingDays));
 
-  return `<article class="card card--edit card--${color} ${deadLineClassName} ${repeatingClassName}">
+  return `<article class="card card--edit card--${color} ${repeatingClassName}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__color-bar">
@@ -138,14 +136,17 @@ export default class TaskEdit extends SmartView {
     super();
     this._data = TaskEdit.parseTaskToData(task);
     this._formSubmitHandler = this._formSubmitHandler.bind(this); // привязывает контекст
+    this._datepicker = null;
 
     this._dueDateToggleHandler = this._dueDateToggleHandler.bind(this);
+    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._repeatingToggleHandler = this._repeatingToggleHandler.bind(this);
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
     this._repeatingChangeHandler = this._repeatingChangeHandler.bind(this);
     this._colorChangeHandler = this._colorChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   getTemplate() {
@@ -209,6 +210,7 @@ export default class TaskEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
@@ -257,5 +259,33 @@ export default class TaskEdit extends SmartView {
 
   reset(task) {
     this.updateData(TaskEdit.parseTaskToData(task));
+  }
+
+  _dueDateChangeHandler([userDate]) {
+    // По заданию дедлайн у задачи устанавливается без учёта времеми,
+    // но объект даты без времени завести нельзя,
+    // поэтому будем считать срок у всех задач -
+    // это 23:59:59 установленной даты
+    userDate.setHours(23, 59, 59, 999);
+
+    this.updateData({
+      dueDate: userDate
+    });
+  }
+
+  _setDatepicker() {
+    if (this._datepicker) {
+      // В случае обновления компонента удаляем вспомогательные DOM-элементы,
+      // которые создает flatpickr при инициализации
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
+
+    if (this._data.isDueDate) {
+      // flatpickr есть смысл инициализировать только в случае,
+      // если поле выбора даты доступно для заполнения
+      this._datepicker = flatpickr(this.getElement().querySelector(`.card__date`), {dateFormat: `j F`, defaultDate: this._data.dueDate, onChange: this._dueDateChangeHandler} // На событие flatpickr передаём наш колбэк
+      );
+    }
   }
 }
